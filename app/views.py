@@ -1,6 +1,5 @@
 from app import app
 from flask import request, session, render_template, redirect, url_for, flash, abort
-from models import *
 from forms import *
 from stellar_utils import create_stellar_account
 from datetime import datetime
