@@ -1,0 +1,15 @@
+{% from "macros.html" import render_field_bootstrap %}
+
+{% extends "base.html" %}
+
+{% block title %}
+StellarRobot
+{% endblock %}
+
+{% block content %}
+<p>
+This is your unique address to send Stellars to.
+</p>
+<h4>UNIQUE STELLAR ADDRESS FOR {{ username }}</h4>
+<h1>{{ account_id }}</h1>
+{% endblock %}
