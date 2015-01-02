@@ -1,0 +1,67 @@
+{
+  "engine_result": "tesSUCCESS",
+  "engine_result_code": 0,
+  "engine_result_message": "The transaction was applied.",
+  "ledger_hash": "FEA977FE2C1A8615EE442B4ED3E6716128DB9E5F1143F7525A6CED9C03228C2F",
+  "ledger_index": 105341,
+  "meta": {
+    "AffectedNodes": [
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Account": "g9cjuzVu98ktpjuaNo8VsbZpPB1ATUuyJv",
+            "Balance": "1004000000",
+            "Flags": 0,
+            "OwnerCount": 0,
+            "Sequence": 1
+          },
+          "LedgerEntryType": "AccountRoot",
+          "LedgerIndex": "8486AB842D0D206AA7F125933C9B1609835FFBDFDAFF5C7D5C220B2C8A8452D6",
+          "PreviousFields": {
+            "Balance": "1003000000"
+          },
+          "PreviousTxnID": "3BE4C9F8EBFDBD9F895C1D547705F1E494BE2E8EB5C1419C8E0D8B5F5EB54E61",
+          "PreviousTxnLgrSeq": 104721
+        }
+      },
+      {
+        "ModifiedNode": {
+          "FinalFields": {
+            "Account": "ga4GRfkU8yaN34v3gWTEd6D4zFUVcYcSLB",
+            "Balance": "995999960",
+            "Flags": 0,
+            "OwnerCount": 0,
+            "Sequence": 5
+          },
+          "LedgerEntryType": "AccountRoot",
+          "LedgerIndex": "D251292E9773AC5F2139253A11B8737ECE831853C7BD576B2FC47885D09BB5AA",
+          "PreviousFields": {
+            "Balance": "996999970",
+            "Sequence": 4
+          },
+          "PreviousTxnID": "3BE4C9F8EBFDBD9F895C1D547705F1E494BE2E8EB5C1419C8E0D8B5F5EB54E61",
+          "PreviousTxnLgrSeq": 104721
+        }
+      }
+    ],
+    "TransactionIndex": 0,
+    "TransactionResult": "tesSUCCESS"
+  },
+  "status": "closed",
+  "transaction": {
+    "Account": "ga4GRfkU8yaN34v3gWTEd6D4zFUVcYcSLB",
+    "Amount": "1000000",
+    "Destination": "g9cjuzVu98ktpjuaNo8VsbZpPB1ATUuyJv",
+    "DestinationTag": 101,
+    "Fee": "10",
+    "Flags": 2147483648,
+    "Sequence": 4,
+    "SigningPubKey": "8D644C4721B6A427A349979AC58870FF7A0B7089DF0C7164B5AE8F214636262E",
+    "TransactionType": "Payment",
+    "TxnSignature": "131CB88E9168C3C6A832ED402248D8F08B840F8BF5640C6638478E356F78AB8ACDE5B30F2C9D2807AF3E7AFA1373209370B4C6C9E759E56A81A4631F2770900A",
+    "date": 473484520,
+    "hash": "9236C57BF5AFDE94188480C35B747A2493EC83C86BA5C32A2D9880403E17CF10"
+  },
+  "type": "transaction",
+  "validated": true
+}

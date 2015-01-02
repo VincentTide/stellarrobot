@@ -10,4 +10,21 @@ StellarRobot
     <div class="container">
         <h1>StellarRobot</h1>
     </div>
+
+    <div class="container">
+      <div class="flash_messages">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ render_field_bootstrap(form.name_or_address) }}
+            {{ render_field_bootstrap(form.submit) }}
+        </form>
+    </div>
 {% endblock %}

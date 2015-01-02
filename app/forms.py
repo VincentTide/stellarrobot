@@ -4,5 +4,5 @@ from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 
 
 class RobotForm(Form):
-    username = StringField('Username')
+    name_or_address = StringField('Name')
     submit = SubmitField('Submit')

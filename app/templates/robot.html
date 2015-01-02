@@ -7,9 +7,10 @@ StellarRobot
 {% endblock %}
 
 {% block content %}
+    <h1>{{ account.stellar_name }}</h1>
+    <h2>{{ account.stellar_address }}</h2>
 <p>
-This is your unique address to send Stellars to.
+This is your unique address to send Stellars to.<br>
+{{ send_to }}
 </p>
-<h4>UNIQUE STELLAR ADDRESS FOR {{ username }}</h4>
-<h1>{{ account_id }}</h1>
 {% endblock %}
