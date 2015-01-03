@@ -3,7 +3,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.moment import Moment
 from flask.ext.script import Manager
-
+from redis import Redis
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -19,6 +19,8 @@ login_manager.login_view = 'login'
 moment = Moment(app)
 manager = Manager(app)
 
+# Redis
+redis = Redis('localhost')
 
 # Import views at the end
 from app import views

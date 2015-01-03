@@ -56,7 +56,7 @@ def index_post():
 def robot(user_id):
     form = None
     account = SendbackAccount.query.get_or_404(user_id)
-    send_to = "%s&dt=%s" % (app.config['SEND_TO_ADDRESS'], account.destination_tag)
+    send_to = "%s&dt=%s" % (app.config['STELLAR_ADDRESS'], account.destination_tag)
 
     return render_template('robot.html', form=form, account=account, send_to=send_to)
 

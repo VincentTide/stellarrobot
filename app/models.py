@@ -82,7 +82,6 @@ class SendbackTransaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_time = db.Column(db.DateTime)
     sendback_account = db.Column(db.Integer, db.ForeignKey(SendbackAccount.id))
-    fulfilled = db.Column(db.Boolean)
 
     account_sender = db.Column(db.Text)
     amount_sender = db.Column(db.Integer)
@@ -95,10 +94,24 @@ class SendbackTransaction(db.Model):
     transaction_type_sender = db.Column(db.Text)
     txn_signature_sender = db.Column(db.Text)
     txn_hash_sender = db.Column(db.Text)
+    ledger_index_sender = db.Column(db.Text)
     date_sender = db.Column(db.Text)
     ledger_hash_sender = db.Column(db.Text)
-    ledger_index_sender = db.Column(db.Text)
     validated_sender = db.Column(db.Boolean)
+
+    payable = db.relationship('Payable', backref='SendbackTransaction', lazy='dynamic')
+
+    def __repr__(self):
+        return '<Transaction: %s - %s>' % (self.account, self.amount)
+
+
+class Payable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created_time = db.Column(db.DateTime)
+    destination = db.Column(db.Text)
+    amount = db.Column(db.Integer)
+    fulfilled = db.Column(db.Boolean)
+    sendback_transaction = db.Column(db.Integer, db.ForeignKey(SendbackTransaction.id))
 
     account_fulfilled = db.Column(db.Text)
     amount_fulfilled = db.Column(db.Integer)
@@ -114,23 +127,6 @@ class SendbackTransaction(db.Model):
     date_fulfilled = db.Column(db.Text)
     ledger_hash_fulfilled = db.Column(db.Text)
     ledger_index_fulfilled = db.Column(db.Text)
-
-    payable = db.relationship('Payable', backref='SendbackTransaction', lazy='dynamic')
-
-
-    def __repr__(self):
-        return '<Transaction: %s - %s>' % (self.account, self.amount)
-
-
-class Payable(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    created_time = db.Column(db.DateTime)
-    destination = db.Column(db.Text)
-    amount = db.Column(db.Integer)
-    fulfilled = db.Column(db.Boolean)
-    sendback_transaction = db.Column(db.Integer, db.ForeignKey(SendbackTransaction.id))
-
-
 
 
 

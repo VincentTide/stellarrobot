@@ -5,16 +5,18 @@ import json
 class DummyClient(WebSocketClient):
     def opened(self):
         print "WebSocket Opened."
-        payload = """
-{
-  "command": "subscribe",
-  "id": 101,
-  "accounts": [
-    "g9cjuzVu98ktpjuaNo8VsbZpPB1ATUuyJv"
-  ]
-}
-"""
-        self.send(payload)
+        self.send("TESTING123")
+#         payload = """
+# {
+#   "command": "subscribe",
+#   "id": 101,
+#   "accounts": [
+#     "g9cjuzVu98ktpjuaNo8VsbZpPB1ATUuyJv"
+#   ]
+# }
+# """
+#         self.send(payload)
+
 
     def closed(self, code, reason=None):
         print "Closed down", code, reason
@@ -27,7 +29,7 @@ class DummyClient(WebSocketClient):
 
 if __name__ == '__main__':
     try:
-        ws = DummyClient('ws://test.stellar.org:9001/')
+        ws = DummyClient('ws://echo.websocket.org/')
         ws.connect()
         ws.run_forever()
     except KeyboardInterrupt:
