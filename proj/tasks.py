@@ -25,6 +25,46 @@ def writing(x, y):
 
 
 @celery.task
+def do_payable(payable_id):
+    # Create locked celery job (using redis) to send payment
+    k = "payable:%s" % payable_id
+    if redis.setnx(k, 1):
+        redis.expire(k, LOCK_EXPIRE)
+        # Send the payment
+        payable = Payable.query.get(payable_id)
+        # Only do the payment if the payable has not been paid out already
+        if payable.fulfilled is False:
+            r = send_payment_site_account(payable.destination, payable.amount)
+            # Check if response was success or failure
+            if r['result']['status'] == 'success':
+                if r['result']['engine_result_code'] == 0:
+                    # payment was successful
+                    tx = r['result']['tx_json']
+                    payable.fulfilled = True
+                    payable.account_fulfilled = tx['Account']
+                    payable.amount_fulfilled = tx['Amount']
+                    payable.destination_fulfilled = tx['Destination']
+                    payable.fee_fulfilled = tx['Fee']
+                    payable.flags_fulfilled = tx['Flags']
+                    payable.sequence_fulfilled = tx['Sequence']
+                    payable.signing_pub_key_fulfilled = tx['SigningPubKey']
+                    payable.transaction_type_fulfilled = tx['TransactionType']
+                    payable.txn_signature_fulfilled = tx['TxnSignature']
+                    payable.txn_hash_fulfilled = tx['hash']
+                    db.session.add(payable)
+                    db.session.commit()
+            else:
+                # Some error happened, email admin
+                pass
+
+        # Release the redis lock after we're done
+        redis.delete(k)
+    else:
+        # The payable is redis locked
+        print "Aborting: the payable is currently locked."
+
+
+@celery.task
 def handle_stellar_message(message):
     # What to do when we receive a message
     # Check it is of transaction type
@@ -75,13 +115,10 @@ def handle_stellar_message(message):
                     db.session.add(payable)
                     db.session.commit()
 
-                    # Create locked celery job (using redis) to send payment
-                    k = "payable:%s" % payable.id
-                    redis.setex(k, 1, LOCK_EXPIRE)
-                    # Send the payment
-                    response = send_payment_site_account(payable.destination, payable.amount)
-                    print response
-                    # Check if response was success or failure
+                    do_payable.delay(payable.id)
+
+
+
 
 
 
