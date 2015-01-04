@@ -1,6 +1,8 @@
 import requests
 import json
 from config import STELLAR_URL, FEE_PERCENT, STELLAR_ADDRESS, STELLAR_SECRET_KEY
+from app.models import *
+import random
 
 
 def create_stellar_account():
@@ -8,6 +10,17 @@ def create_stellar_account():
     r = requests.post(STELLAR_URL, payload)
     result = json.loads(r.text)
     return result
+
+
+def generate_random_destination_tag():
+    # Generate dest tags with 6 digits
+    dt = random.randrange(1, 1000000)
+    # Check to make sure its unique among SendbackAccounts
+    found = SendbackAccount.query.filter_by(destination_tag=dt).first()
+    while found is not None:
+        dt = random.randrange(1, 1000000)
+        found = SendbackAccount.query.filter_by(destination_tag=dt).first()
+    return dt
 
 
 def stellar_name_lookup(address):
@@ -73,8 +86,9 @@ def calculate_fee(amount):
     return amount * float(FEE_PERCENT)
 
 
-def send_payment(sender, destination, amount, secret):
-    payload = """
+def send_payment(sender, destination, amount, secret, destination_tag=None):
+    if destination_tag is None:
+        payload = """
 {
   "method": "submit",
   "params": [
@@ -90,13 +104,32 @@ def send_payment(sender, destination, amount, secret):
   ]
 }
 """ % (secret, sender, destination, amount)
+    else:
+        payload = """
+{
+  "method": "submit",
+  "params": [
+    {
+      "secret": "%s",
+      "tx_json": {
+        "TransactionType": "Payment",
+        "Account": "%s",
+        "Destination": "%s",
+        "Amount": "%s",
+        "DestinationTag": "%s",
+      }
+    }
+  ]
+}
+""" % (secret, sender, destination, amount, destination_tag)
     resp = requests.post(STELLAR_URL, payload)
     r = json.loads(resp.text)
     return r
 
 
-def send_payment_site_account(destination, amount):
-    payload = """
+def send_payment_site_account(destination, amount, destination_tag=None):
+    if destination_tag is None:
+        payload = """
 {
   "method": "submit",
   "params": [
@@ -112,6 +145,24 @@ def send_payment_site_account(destination, amount):
   ]
 }
 """ % (STELLAR_SECRET_KEY, STELLAR_ADDRESS, destination, amount)
+    else:
+        payload = """
+{
+  "method": "submit",
+  "params": [
+    {
+      "secret": "%s",
+      "tx_json": {
+        "TransactionType": "Payment",
+        "Account": "%s",
+        "Destination": "%s",
+        "Amount": "%s",
+        "DestinationTag": "%s"
+      }
+    }
+  ]
+}
+""" % (STELLAR_SECRET_KEY, STELLAR_ADDRESS, destination, amount, destination_tag)
     resp = requests.post(STELLAR_URL, payload)
     r = json.loads(resp.text)
     return r

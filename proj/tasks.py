@@ -34,7 +34,7 @@ def do_payable(payable_id):
         payable = Payable.query.get(payable_id)
         # Only do the payment if the payable has not been paid out already
         if payable.fulfilled is False:
-            r = send_payment_site_account(payable.destination, payable.amount)
+            r = send_payment_site_account(payable.destination, payable.amount, payable.trace_tag)
             # Check if response was success or failure
             if r['result']['status'] == 'success':
                 if r['result']['engine_result_code'] == 0:
@@ -86,13 +86,18 @@ def handle_stellar_message(message):
                         sender_id = None
                     else:
                         sender_id = sender.id
+                    # Handle payments without destination tags
+                    if 'DestinationTag' in tx:
+                        dt = tx['DestinationTag']
+                    else:
+                        dt = None
                     sendback = SendbackTransaction(
                         created_time=datetime.utcnow(),
                         sendback_account=sender_id,
                         account_sender=sender_address,
                         amount_sender=tx['Amount'],
                         destination_sender=tx['Destination'],
-                        destination_tag_sender=tx['DestinationTag'],
+                        destination_tag_sender=dt,
                         fee_sender=tx['Fee'],
                         flags_sender=tx['Flags'],
                         sequence_sender=tx['Sequence'],
@@ -112,6 +117,9 @@ def handle_stellar_message(message):
                         fulfilled=False,
                         sendback_transaction=sendback.id
                     )
+                    db.session.add(payable)
+                    db.session.commit()
+                    payable.trace_tag = payable.id
                     db.session.add(payable)
                     db.session.commit()
 
