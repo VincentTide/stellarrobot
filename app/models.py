@@ -73,6 +73,7 @@ class SendbackAccount(db.Model):
     destination_tag = db.Column(db.Integer)
     created_time = db.Column(db.DateTime, default=datetime.utcnow)
     transactions = db.relationship('SendbackTransaction', backref='SendbackAccount', lazy='dynamic')
+    payables = db.relationship('Payable', backref='SendbackAccount', lazy='dynamic')
 
     def __repr__(self):
         return '<SendbackAccount: %s>' % self.stellar_name
@@ -92,8 +93,8 @@ class SendbackTransaction(db.Model):
     sequence_sender = db.Column(db.Text)
     signing_pub_key_sender = db.Column(db.Text)
     transaction_type_sender = db.Column(db.Text)
-    txn_signature_sender = db.Column(db.Text)
-    txn_hash_sender = db.Column(db.Text)
+    tx_signature_sender = db.Column(db.Text)
+    tx_hash_sender = db.Column(db.Text)
     ledger_index_sender = db.Column(db.Text)
     date_sender = db.Column(db.Text)
     ledger_hash_sender = db.Column(db.Text)
@@ -109,10 +110,16 @@ class Payable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_time = db.Column(db.DateTime)
     destination = db.Column(db.Text)
-    trace_tag = db.Column(db.Integer)
     amount = db.Column(db.Integer)
-    fulfilled = db.Column(db.Boolean)
     sendback_transaction = db.Column(db.Integer, db.ForeignKey(SendbackTransaction.id))
+    sendback_account = db.Column(db.Integer, db.ForeignKey(SendbackAccount.id))
+    pending_transaction = db.relationship('PendingTransaction', backref='Payable', lazy='dynamic')
+    tx_signed = db.Column(db.Boolean)
+    tx_submitted = db.Column(db.Boolean)
+    tx_validated = db.Column(db.Boolean)
+
+    tx_blob = db.Column(db.Text)
+    tx_hash = db.Column(db.Text)
 
     account_fulfilled = db.Column(db.Text)
     amount_fulfilled = db.Column(db.Integer)
@@ -123,11 +130,28 @@ class Payable(db.Model):
     sequence_fulfilled = db.Column(db.Text)
     signing_pub_key_fulfilled = db.Column(db.Text)
     transaction_type_fulfilled = db.Column(db.Text)
-    txn_signature_fulfilled = db.Column(db.Text)
-    txn_hash_fulfilled = db.Column(db.Text)
+    tx_signature_fulfilled = db.Column(db.Text)
+    tx_hash_fulfilled = db.Column(db.Text)
     date_fulfilled = db.Column(db.Text)
     ledger_hash_fulfilled = db.Column(db.Text)
     ledger_index_fulfilled = db.Column(db.Text)
+
+    def __repr__(self):
+        return '<Payable: %s>' % self.id
+
+
+class PendingTransaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    destination = db.Column(db.Text)
+    amount = db.Column(db.Integer)
+    created_time = db.Column(db.DateTime)
+    payable = db.Column(db.Integer, db.ForeignKey(Payable.id))
+    tx_signed = db.Column(db.Boolean)
+    tx_submitted = db.Column(db.Boolean)
+    tx_validated = db.Column(db.Boolean)
+
+    tx_blob = db.Column(db.Text)
+    tx_hash = db.Column(db.Text)
 
 
 

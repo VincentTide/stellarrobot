@@ -53,7 +53,7 @@ def stellar_address_lookup(name):
         return response['federation_json']
 
 
-def verify_txn(txn_hash, ledger_index=None):
+def verify_tx(tx_hash, ledger_index=None):
     if ledger_index is None:
         payload = """
 {
@@ -64,7 +64,7 @@ def verify_txn(txn_hash, ledger_index=None):
     }
   ]
 }
-""" % txn_hash
+""" % tx_hash
     else:
         payload = """
 {
@@ -76,7 +76,7 @@ def verify_txn(txn_hash, ledger_index=None):
     }
   ]
 }
-""" % (txn_hash, ledger_index)
+""" % (tx_hash, ledger_index)
     resp = requests.post(STELLAR_URL, payload)
     r = json.loads(resp.text)
     return r
@@ -87,6 +87,7 @@ def calculate_fee(amount):
 
 
 def send_payment(sender, destination, amount, secret, destination_tag=None):
+    # This is an UNSAFE way to submit payments, sign the transaction first
     if destination_tag is None:
         payload = """
 {
@@ -128,6 +129,7 @@ def send_payment(sender, destination, amount, secret, destination_tag=None):
 
 
 def send_payment_site_account(destination, amount, destination_tag=None):
+    # This is an UNSAFE way to submit payments, sign the transaction first
     if destination_tag is None:
         payload = """
 {
@@ -163,6 +165,59 @@ def send_payment_site_account(destination, amount, destination_tag=None):
   ]
 }
 """ % (STELLAR_SECRET_KEY, STELLAR_ADDRESS, destination, amount, destination_tag)
+    resp = requests.post(STELLAR_URL, payload)
+    r = json.loads(resp.text)
+    return r
+
+
+def tx_sign(destination, amount, destination_tag=None):
+    if destination_tag is None:
+        payload = """
+{
+  "method": "sign",
+  "params": [{
+    "secret": "%s",
+    "tx_json": {
+      "TransactionType": "Payment",
+      "Account":"%s",
+      "Destination": "%s",
+      "Amount": "%s"
+    }
+  }]
+}
+""" % (STELLAR_SECRET_KEY, STELLAR_ADDRESS, destination, amount)
+    else:
+        payload = """
+{
+  "method": "sign",
+  "params": [{
+    "secret": "%s",
+    "tx_json": {
+      "TransactionType": "Payment",
+      "Account":"%s",
+      "Destination": "%s",
+      "Amount": "%s",
+      "DestinationTag": "%s"
+    }
+  }]
+}
+""" % (STELLAR_SECRET_KEY, STELLAR_ADDRESS, destination, amount, destination_tag)
+
+    resp = requests.post(STELLAR_URL, payload)
+    r = json.loads(resp.text)
+    return r
+
+
+def submit_tx_blob(blob):
+    payload = """
+{
+  "method": "submit",
+  "params": [{
+    "tx_blob": "%s"
+  }]
+}
+""" % (blob)
+
     resp = requests.post(STELLAR_URL, payload)
     r = json.loads(resp.text)
     return r

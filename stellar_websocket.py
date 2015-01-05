@@ -20,7 +20,7 @@ def on_open(ws):
     payload = """
 {
   "command": "subscribe",
-  "id": 101,
+  "id": "101",
   "accounts": [
     "g9cjuzVu98ktpjuaNo8VsbZpPB1ATUuyJv"
   ]
