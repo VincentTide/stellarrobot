@@ -9,6 +9,6 @@ CELERY_TIMEZONE = 'UTC'
 CELERYBEAT_SCHEDULE = {
     'pending_payments': {
         'task': 'proj.tasks.pending_payments',
-        'schedule': timedelta(seconds=70)
+        'schedule': timedelta(seconds=90)
     }
 }

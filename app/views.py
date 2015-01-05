@@ -60,6 +60,13 @@ def robot():
     form = None
     account = SendbackAccount.query.get_or_404(session['user_id'])
     send_to = "%s&dt=%s" % (app.config['STELLAR_ADDRESS'], account.destination_tag)
+    received = account.transactions
+    payments = account.payables
 
-    return render_template('robot.html', form=form, account=account, send_to=send_to)
+    return render_template('robot.html',
+                           form=form,
+                           account=account,
+                           send_to=send_to,
+                           received=received,
+                           payments=payments)
 

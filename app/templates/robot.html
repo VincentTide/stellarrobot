@@ -16,5 +16,17 @@ StellarRobot
             <span class="label label-success" style="font-size:30px;">{{ send_to }}</span>
         </div>
 
+        <br>
+        <br>
+        <h3>Received Payments</h3>
+        {% for item in received %}
+        <p>{{ item.created_time }} {{ item.amount_sender }}</p>
+        {% endfor %}
+        <br>
+        <h3>Sent Payments</h3>
+        {% for item in payments %}
+        <p>{{ item.created_time }} {{ item.amount_fulfilled }}</p>
+        {% endfor %}
+
     </div>
 {% endblock %}

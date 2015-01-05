@@ -9,8 +9,8 @@ from config import STELLAR_URL, STELLAR_ADDRESS, LOCK_EXPIRE
 from app import redis
 
 
-@celery.task
-def do_payment(pending_id):
+@celery.task(bind=True, default_retry_delay=10, max_retries=2)
+def do_payment(self, pending_id):
     # Create locked celery job (using redis) to send payment
     k = "do_payment:%s" % pending_id
     if redis.setnx(k, 1):
@@ -70,6 +70,11 @@ def do_payment(pending_id):
                     db.session.commit()
                     db.session.delete(pending)
                     db.session.commit()
+            else:
+                # Validation typically takes 5 seconds to confirm
+                redis.delete(k)
+                raise self.retry()
+
         if pending.tx_signed is True and pending.tx_submitted is True and pending.tx_validated is True:
             # If all 3 conditions are true, the pending entry should be deleted
             db.session.delete(pending)
