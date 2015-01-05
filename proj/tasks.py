@@ -168,10 +168,3 @@ def pending_payments():
         redis.delete(k)
     else:
         print "pending_payments is redis locked."
-
-
-
-
-
-
-
