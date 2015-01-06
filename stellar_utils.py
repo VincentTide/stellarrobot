@@ -12,6 +12,10 @@ def create_stellar_account():
     return result
 
 
+def convert_stellar_for_display(amount):
+    return amount / 1000000.0
+
+
 def generate_random_destination_tag():
     # Generate dest tags with 6 digits
     dt = random.randrange(1, 1000000)

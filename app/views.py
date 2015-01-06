@@ -4,6 +4,7 @@ from forms import *
 from models import *
 from stellar_utils import *
 from datetime import datetime
+from sqlalchemy import desc, asc
 
 
 @app.errorhandler(404)
@@ -60,8 +61,14 @@ def robot():
     form = None
     account = SendbackAccount.query.get_or_404(session['user_id'])
     send_to = "%s&dt=%s" % (app.config['STELLAR_ADDRESS'], account.destination_tag)
-    received = account.transactions
-    payments = account.payables
+
+    # Convert micro stellar to stellar
+    received = account.transactions.order_by(desc(SendbackTransaction.created_time))
+    for item in received:
+        item.amount_sender = convert_stellar_for_display(item.amount_sender)
+    payments = account.payables.order_by(desc(Payable.created_time))
+    for item in payments:
+        item.amount_fulfilled = convert_stellar_for_display(item.amount_fulfilled)
 
     return render_template('robot.html',
                            form=form,
