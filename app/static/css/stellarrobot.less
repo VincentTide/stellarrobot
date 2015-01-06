@@ -22,6 +22,12 @@
 @purple2: #8e44ad;
 @navy1: #34495e;
 @navy2: #2c3e50;
+@teal1: #1abc9c;
+@teal2: #16a085;
+@red1: #e74c3c;
+@red2: #c0392b;
+@blue1: #3498db;
+@blue2: #2980b9;
 
 // Site Colors
 @bg-gradient1: #121212;
@@ -43,6 +49,8 @@ body {
 #top {
     .container {
         background-color: @orange1;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
     background-color: @orange1;
     color: @white;
@@ -53,7 +61,7 @@ body {
         color: @white;
         text-decoration: none;
     }
-    h2 {
+    .site_title {
         font-weight: 300;
         font-size: 30px;
         margin-top: 14px;
@@ -69,7 +77,7 @@ body {
     }
     background-color: @green2;
     padding-top: 30px;
-    padding-bottom: 50px;
+    padding-bottom: 100px;
 }
 
 #bottom {
@@ -77,9 +85,15 @@ body {
         background-color: @navy2;
     }
     background-color: @navy2;
-    padding-top: 60px;
-    padding-bottom: 20px;
+    padding-top: 40px;
+    padding-bottom: 38px;
+    .footer {
+        a {
+            color: ghostwhite;
+        }
+    }
 }
+
 
 
 
@@ -173,6 +187,9 @@ button[type=submit] {
     .smaller_text {
         font-size: 17px;
     }
+    a {
+        color: @blue2;
+    }
 }
 
 .destination_address {
@@ -201,6 +218,13 @@ button[type=submit] {
     .sent_payments {
         margin-top: 40px;
     }
+}
+
+.article_well {
+    font-size: 20px;
+    background-color: @green2;
+    padding-top: 50px;
+    padding-bottom: 400px;
 }
 
 

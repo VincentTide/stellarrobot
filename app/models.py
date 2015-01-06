@@ -149,6 +149,7 @@ class PendingTransaction(db.Model):
     tx_signed = db.Column(db.Boolean)
     tx_submitted = db.Column(db.Boolean)
     tx_validated = db.Column(db.Boolean)
+    sequence = db.Column(db.Integer)
 
     tx_blob = db.Column(db.Text)
     tx_hash = db.Column(db.Text)

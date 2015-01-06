@@ -3,6 +3,7 @@ import json
 from config import STELLAR_URL, FEE_PERCENT, STELLAR_ADDRESS, STELLAR_SECRET_KEY
 from app.models import *
 import random
+from app import redis
 
 
 def create_stellar_account():
@@ -174,7 +175,7 @@ def send_payment_site_account(destination, amount, destination_tag=None):
     return r
 
 
-def tx_sign(destination, amount, destination_tag=None):
+def tx_sign(destination, amount, sequence, destination_tag=None):
     if destination_tag is None:
         payload = """
 {
@@ -185,11 +186,12 @@ def tx_sign(destination, amount, destination_tag=None):
       "TransactionType": "Payment",
       "Account":"%s",
       "Destination": "%s",
-      "Amount": "%s"
+      "Amount": "%s",
+      "Sequence": "%s"
     }
   }]
 }
-""" % (STELLAR_SECRET_KEY, STELLAR_ADDRESS, destination, amount)
+""" % (STELLAR_SECRET_KEY, STELLAR_ADDRESS, destination, amount, sequence)
     else:
         payload = """
 {
@@ -201,11 +203,12 @@ def tx_sign(destination, amount, destination_tag=None):
       "Account":"%s",
       "Destination": "%s",
       "Amount": "%s",
-      "DestinationTag": "%s"
+      "DestinationTag": "%s",
+      "Sequence": "%s"
     }
   }]
 }
-""" % (STELLAR_SECRET_KEY, STELLAR_ADDRESS, destination, amount, destination_tag)
+""" % (STELLAR_SECRET_KEY, STELLAR_ADDRESS, destination, amount, destination_tag, sequence)
 
     resp = requests.post(STELLAR_URL, payload)
     r = json.loads(resp.text)
@@ -225,3 +228,13 @@ def submit_tx_blob(blob):
     resp = requests.post(STELLAR_URL, payload)
     r = json.loads(resp.text)
     return r
+
+
+def verify_tx_validated(tx_hash):
+    r = verify_tx(tx_hash)
+    if r['result']['status'] == 'success' and 'validated' in r['result']:
+        if r['result']['validated'] is True:
+            # tx has been confirmed
+            return True
+    else:
+        return False

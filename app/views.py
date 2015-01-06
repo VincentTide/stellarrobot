@@ -64,16 +64,32 @@ def robot():
 
     # Convert micro stellar to stellar
     received = account.transactions.order_by(desc(SendbackTransaction.created_time))
+    recd = []
     for item in received:
-        item.amount_sender = convert_stellar_for_display(item.amount_sender)
+        d = {}
+        d['date'] = item.created_time
+        d['amount'] = convert_stellar_for_display(item.amount_sender)
+        recd.append(d)
     payments = account.payables.order_by(desc(Payable.created_time))
+    pays = []
     for item in payments:
-        item.amount_fulfilled = convert_stellar_for_display(item.amount_fulfilled)
+        d = {}
+        d['date'] = item.created_time
+        try:
+            d['amount'] = convert_stellar_for_display(item.amount_fulfilled)
+        except:
+            d['amount'] = "Pending"
+        pays.append(d)
 
     return render_template('robot.html',
                            form=form,
                            account=account,
                            send_to=send_to,
-                           received=received,
-                           payments=payments)
+                           received=recd,
+                           payments=pays)
+
+
+@app.route('/contact-us', methods=['GET'])
+def contact():
+    return render_template('contact.html')
 

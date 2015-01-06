@@ -34,7 +34,8 @@
 
         <div id="top">
             <div class="container">
-                <a href="{{ url_for('index') }}"><h2>StellarRobot</h2></a>
+                <a href="{{ url_for('index') }}"><span class="site_title">StellarRobot</span></a>
+                <a href="{{ url_for('contact') }}" class="pull-right"><span>Contact Us</span></a>
             </div>
         </div>
 
@@ -44,7 +45,7 @@
         <div id="bottom">
             <div class="container">
                 <div class="footer">
-                    <p>{{ moment().format('ll') }} &copy; StellarRobot.com {{ moment().format('YYYY') }}.</p>
+                    <p>{{ moment().format('ll') }} &copy; <a href="{{ url_for('index') }}">StellarRobot.com</a> {{ moment().format('YYYY') }}.</p>
                 </div>
             </div>
         </div>

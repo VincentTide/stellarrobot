@@ -29,8 +29,8 @@ StellarRobot
 
             <div class="instructions">
                 <h2>Next Step</h2>
-                <p>Send stellars to the address generated for your account below.</p>
-                <p class="smaller_text">Make sure your account qualifies for the matching first send bonus.</p>
+                <p>Visit <a href="https://www.stellar.org/" target="_blank">Stellar.org</a> and send stellars to the address generated for your account below.</p>
+                <p class="smaller_text">Make sure your account qualifies for the <a href="http://i.imgur.com/3ERb6w0.jpg" target="_blank">matching first send bonus</a>.</p>
             </div>
 
             <div class="destination_address">
@@ -54,8 +54,8 @@ StellarRobot
                     <tbody>
                         {% for item in received %}
                         <tr>
-                            <td>{{ moment(item.created_time).format('lll') }}</td>
-                            <td>{{ item.amount_sender }}</td>
+                            <td>{{ moment(item.date).format('lll') }}</td>
+                            <td>{{ item.amount }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -74,8 +74,8 @@ StellarRobot
                     <tbody>
                         {% for item in payments %}
                         <tr>
-                            <td>{{ moment(item.created_time).format('lll') }}</td>
-                            <td>{{ item.amount_fulfilled }}</td>
+                            <td>{{ moment(item.date).format('lll') }}</td>
+                            <td>{{ item.amount }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

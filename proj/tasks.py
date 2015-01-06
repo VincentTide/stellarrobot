@@ -7,10 +7,11 @@ from stellar_utils import *
 from app.models import *
 from config import STELLAR_URL, STELLAR_ADDRESS, LOCK_EXPIRE
 from app import redis
+from sqlalchemy import desc, asc
 
 
-@celery.task(bind=True, default_retry_delay=10, max_retries=2)
-def do_payment(self, pending_id):
+@celery.task
+def do_payment(pending_id):
     # Create locked celery job (using redis) to send payment
     k = "do_payment:%s" % pending_id
     if redis.setnx(k, 1):
@@ -18,7 +19,7 @@ def do_payment(self, pending_id):
         pending = PendingTransaction.query.get(pending_id)
         # Only do the task if signed is not completed already
         if pending.tx_signed is False:
-            r = tx_sign(pending.destination, pending.amount)
+            r = tx_sign(pending.destination, pending.amount, pending.sequence)
             if r['result']['status'] == 'success' and 'tx_blob' in r['result']:
                 # Signing was successful
                 pending.tx_blob = r['result']['tx_blob']
@@ -34,18 +35,26 @@ def do_payment(self, pending_id):
                 db.session.add(payable)
                 db.session.commit()
         if pending.tx_signed is True and pending.tx_submitted is False:
-            r = submit_tx_blob(pending.tx_blob)
-            if r['result']['status'] == 'success':
-                if r['result']['engine_result_code'] == 0:
-                    # payment was successful
-                    tx = r['result']['tx_json']
+            # Check if tx has already been submitted successfully
+            verify = verify_tx(pending.tx_hash)
+            if verify['result']['status'] == 'success' and 'validated' in r['result']:
+                if verify['result']['validated'] is True:
                     pending.tx_submitted = True
                     db.session.add(pending)
                     db.session.commit()
-                    payable = Payable.query.get(pending.payable)
-                    payable.tx_submitted = True
-                    db.session.add(payable)
-                    db.session.commit()
+            else:
+                r = submit_tx_blob(pending.tx_blob)
+                if r['result']['status'] == 'success':
+                    if r['result']['engine_result_code'] == 0:
+                        # payment was successful
+                        tx = r['result']['tx_json']
+                        pending.tx_submitted = True
+                        db.session.add(pending)
+                        db.session.commit()
+                        payable = Payable.query.get(pending.payable)
+                        payable.tx_submitted = True
+                        db.session.add(payable)
+                        db.session.commit()
         if pending.tx_signed is True and pending.tx_submitted is True and pending.tx_validated is False:
             # Verify tx was confirmed and validated
             r = verify_tx(pending.tx_hash)
@@ -72,8 +81,8 @@ def do_payment(self, pending_id):
                     db.session.commit()
             else:
                 # Validation typically takes 5 seconds to confirm
-                redis.delete(k)
-                raise self.retry()
+                # celery retry is bugging out the redis lock release
+                pass
 
         if pending.tx_signed is True and pending.tx_submitted is True and pending.tx_validated is True:
             # If all 3 conditions are true, the pending entry should be deleted
@@ -147,6 +156,9 @@ def handle_stellar_message(message):
                     db.session.add(payable)
                     db.session.commit()
 
+                    seq = redis.get('Sequence')
+                    redis.incr('Sequence')
+
                     pending = PendingTransaction(
                         payable=payable.id,
                         destination=payable.destination,
@@ -154,7 +166,8 @@ def handle_stellar_message(message):
                         created_time=datetime.utcnow(),
                         tx_signed=False,
                         tx_submitted=False,
-                        tx_validated=False
+                        tx_validated=False,
+                        sequence=seq
                     )
                     db.session.add(pending)
                     db.session.commit()
@@ -166,7 +179,7 @@ def handle_stellar_message(message):
 def pending_payments():
     k = "pending_payments"
     if redis.setnx(k, 1):
-        pendings = PendingTransaction.query.all()
+        pendings = PendingTransaction.query.order_by(asc(PendingTransaction.created_time)).all()
         for pending in pendings:
             do_payment(pending.id)
         # Release the redis lock after we done working
