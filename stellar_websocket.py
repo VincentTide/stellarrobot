@@ -20,9 +20,9 @@ def on_open(ws):
     payload = """
 {
   "command": "subscribe",
-  "id": "101",
+  "id": "1",
   "accounts": [
-    "g9cjuzVu98ktpjuaNo8VsbZpPB1ATUuyJv"
+    "gfPoZn234sUcLxPeuk8Jb4h4c3fRHzfYyj"
   ]
 }
 """
@@ -31,7 +31,7 @@ def on_open(ws):
 
 
 if __name__ == "__main__":
-    ws = websocket.WebSocketApp("ws://test.stellar.org:9001",
+    ws = websocket.WebSocketApp("ws://live.stellar.org:9001",
                                 on_message=on_message,
                                 on_error=on_error,
                                 on_close=on_close)

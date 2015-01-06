@@ -13,14 +13,12 @@ def page_not_found(e):
 
 
 @app.route('/', methods=['GET'])
-@app.route('/index', methods=['GET'])
 def index():
     form = RobotForm()
     return render_template('index.html', form=form)
 
 
 @app.route('/', methods=['POST'])
-@app.route('/index', methods=['POST'])
 def index_post():
     form = RobotForm()
     if form.validate_on_submit():
