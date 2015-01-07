@@ -59,8 +59,8 @@ def robot():
     form = None
     account = SendbackAccount.query.get_or_404(session['user_id'])
     # Stellar.org currently does not support sending to destination tags so disable for now
-    # send_to = "%s&dt=%s" % (app.config['STELLAR_ADDRESS'], account.destination_tag)
-    send_to = app.config['STELLAR_ADDRESS']
+    send_to = "%s?dt=%s" % (app.config['STELLAR_ADDRESS'], account.destination_tag)
+    # send_to = app.config['STELLAR_ADDRESS']
 
     # Convert micro stellar to stellar
     received = account.transactions.order_by(desc(SendbackTransaction.created_time))
