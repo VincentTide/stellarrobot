@@ -1,6 +1,7 @@
 import websocket
 import json
 from proj.tasks import handle_stellar_message
+from config import STELLAR_WS, STELLAR_ADDRESS
 
 
 def on_message(ws, message):
@@ -22,18 +23,19 @@ def on_open(ws):
   "command": "subscribe",
   "id": "1",
   "accounts": [
-    "gfPoZn234sUcLxPeuk8Jb4h4c3fRHzfYyj"
+    "%s"
   ]
 }
-"""
+""" % STELLAR_ADDRESS
     ws.send(payload)
     print "WebSocket connected."
 
 
 if __name__ == "__main__":
-    ws = websocket.WebSocketApp("ws://live.stellar.org:9001",
+    ws = websocket.WebSocketApp(STELLAR_WS,
                                 on_message=on_message,
                                 on_error=on_error,
                                 on_close=on_close)
     ws.on_open = on_open
-    ws.run_forever()
+    while True:
+        ws.run_forever(ping_interval=180)
