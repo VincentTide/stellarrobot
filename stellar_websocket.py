@@ -37,5 +37,4 @@ if __name__ == "__main__":
                                 on_error=on_error,
                                 on_close=on_close)
     ws.on_open = on_open
-    while True:
-        ws.run_forever(ping_interval=180)
+    ws.run_forever(ping_interval=180)
