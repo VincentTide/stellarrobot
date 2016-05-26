@@ -1,0 +1,5 @@
+STELLAR_URL = 'https://live.stellar.org:9002'
+STELLAR_WS = 'ws://live.stellar.org:9001'
+SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:your-password@localhost/stellarrobot'
+STELLAR_ADDRESS = 'your-stellar-address'
+STELLAR_SECRET_KEY = 'your-stellar-secret-key'

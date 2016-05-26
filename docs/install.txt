@@ -1,0 +1,44 @@
+Saving sensitive keys to environment variable
+in ~/.bashrc
+add to bottom of file
+export SECRET_KEY=sensitive_keys_here
+
+
+Redis-server
+sudo add-apt-repository ppa:chris-lea/redis-server
+
+
+Celery requirements
+RabbitMQ http://www.rabbitmq.com/install-debian.html
+Add the following line to your /etc/apt/sources.list:
+deb http://www.rabbitmq.com/debian/ testing main
+Add apt key
+wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+sudo apt-key add rabbitmq-signing-key-public.asc
+sudo apt-get update
+sudo apt-get install rabbitmq-server
+
+pip install celery
+
+
+Running celery manually
+$ celery -A proj worker --loglevel=info
+Also run celery beat, both are required for periodic tasks
+$ celery -A proj beat --schedule /home/jin/code/stellarrobot/logs/celery/celerybeat-schedule --loglevel=INFO
+
+
+Link the config file to supervisor's file
+$ sudo ln -s /home/webuser/www/stellarrobot/stellarrobot/configs/stellarrobot_supervisor.conf /etc/supervisor/conf.d/stellarrobot_supervisor.conf
+
+
+sudo ufw allow 22
+sudo ufw allow 27316
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw allow 25
+sudo ufw show added
+sudo ufw enable
+
+
+install fail2ban
+Manually set redis 'Sequence' using stellar account info API call
