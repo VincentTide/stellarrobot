@@ -5,3 +5,5 @@ A web application that accepted deposits in the Stellar digital currency. Stella
 The technology stack used to build StellarRobot was Python, Flask web framework, Postgres database, Websockets to listen for incoming transactions, Celery to handle task management, RabbitMQ for the messaging queue, Redis to handle task locking, and Nginx as a reverse proxy in front of Gunicorn server hosted on Digital Ocean.
 
 Note the project has been discontinued and is kept on Github for reference purposes.
+
+![](screenshot.png?raw=true)
